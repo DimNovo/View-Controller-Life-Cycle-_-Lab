@@ -11,101 +11,65 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
-    var num = 0
-    
-    @IBOutlet weak var displayDataLabel: UILabel!
+    var containerViewController: ContainerViewController!
+    var name: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        currentColor()
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        num += 1
-        displayDataLabel.text?
-            .append("\(num).\(#function)\n")
-        speak(text: "New functions number: \(displayDataLabel.text!)")
+        
+        containerViewController = UIApplication.shared.windows.first?.rootViewController as? ContainerViewController
+        
+        name = tabBarItem.title
+        
+        guard containerViewController != nil else {
+            print(#function, "can't get container view controller")
+            return
+        }
+        update(#function)
+        speak(text: name)
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        currentColor()
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        num += 1
-        displayDataLabel.text?
-            .append("\(num).\(#function)\n")
-        speak(text: "New functions number: \(displayDataLabel.text!)")
+        update(#function)
+        speak(text: name)
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        currentColor()
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        num += 1
-        displayDataLabel.text?
-            .append("\(num).\(#function)\n")
-        speak(text: "New functions number: \(displayDataLabel.text!)")
+        update(#function)
+        speak(text: name)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        currentColor()
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        num += 1
-        displayDataLabel.text?
-            .append("\(num).\(#function)\n")
-        speak(text: "New functions number: \(displayDataLabel.text!)")
+        update(#function)
+        speak(text: name)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        currentColor()
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        num += 1
-        displayDataLabel.text?
-            .append("\(num).\(#function)\n")
-        speak(text: "New functions number: \(displayDataLabel.text!)")
+        update(#function)
+        speak(text: name)
     }
     
-    @IBAction func displayClearButton(_ sender: UIButton) {
-        guard (displayDataLabel?.text != nil)
-            else {return}
-        displayDataLabel.text?.removeAll()
-        speak(text: "Clear all data!")
-        num = 0
+    override func viewWillLayoutSubviews() {
+        update(#function)
+        speak(text: name)
     }
     
-    func currentColor()
-    {
-        guard let vc = tabBarController?
-            .selectedViewController?.title!
-            else {return}
-        switch vc {
-        case "RedVC":
-            displayDataLabel?.textColor = .red
-            tabBarController?.selectedViewController?
-                .tabBarItem.badgeColor = .red
-        case "GreenVC":
-            displayDataLabel?.textColor = .green
-            tabBarController?.selectedViewController?
-                .tabBarItem.badgeColor = .green
-        case "YellowVC":
-            displayDataLabel?.textColor = .yellow
-            tabBarController?.selectedViewController?
-                .tabBarItem.badgeColor = .yellow
-        default:
-            break
-        }
+    override func viewDidLayoutSubviews() {
+        update(#function)
+        speak(text: name)
     }
+    
+    func update(_ caller: String) {
+        
+        containerViewController.update(caller: "From \(name ?? "no name"): \(caller)")
+    }
+    
     func speak(text: String) {
         let speechSynthesizer = AVSpeechSynthesizer()
         let utterance = AVSpeechUtterance(string: text)
         utterance.pitchMultiplier = 1
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.volume = 1
+        utterance.volume = 0.5
         utterance.voice = AVSpeechSynthesisVoice.init()
         speechSynthesizer.speak(utterance)
     }
